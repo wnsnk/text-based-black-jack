@@ -47,13 +47,8 @@ class Player():
                 total_value += card.value
             print(f'Total Value: {total_value}')
             print(f'Money ${self.money}')
-            print(f'Current bet: {self.bet}')
-            # if count == 1 and total_value == 21:
-            #     print('BLACK JACK!!!')
-            #     self.bet * 2.5
-            #     self.money += self.bet
-            #     print(f'Money ${self.money}')
-            #     end_of_turn = True
+            print(f'Current bet: ${self.bet}')
+
             if total_value == 21:
                 print('You have 21! End of turn')
                 self.score = total_value

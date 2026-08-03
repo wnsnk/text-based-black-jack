@@ -14,6 +14,7 @@ for num in range(PLAYERS):
     player = Player(num + 1)
     player_list.append(player)
 
-# dealer.take_bets(player_list)
+dealer.take_bets(player_list)
 dealer.deal_starting_cards(player_list)
-dealer.start_game(player_list)
+if not dealer.end_game:
+    dealer.start_game(player_list)

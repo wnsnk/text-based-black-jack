@@ -8,6 +8,9 @@ class Card():
         self.suit = suit
 
 
+placeholder = Card('?', '?', '?')
+
+
 def create_deck():
     suits = ['♣', '♦', '♥', '♠']
     deck = []
@@ -18,11 +21,9 @@ def create_deck():
         deck.append(Card('J', 10, suit))
         deck.append(Card('Q', 10, suit))
         deck.append(Card('K', 10, suit))
-        deck.append(Card('A', [1, 11], suit))
+        deck.append(Card('A', 11, suit))
+        # TODO: Fix Ace
     return deck
-
-
-placeholder = Card('?', '?', '?')
 
 
 def shuffle_cards(deck):

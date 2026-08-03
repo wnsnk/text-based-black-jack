@@ -7,6 +7,7 @@ class Dealer():
         self.cards = []
         self.secret_card = None
         self.deck = deck
+        self.end_game = False
 
     def take_bets(self, players):
         for player in players:
@@ -39,9 +40,20 @@ class Dealer():
                 print(f'Player {player.number} has Black Jack!')
                 player.score = 21
                 player.has_blackjack = True
+                player.bet * 2.5
+                player.money += player.bet
+                print(
+                    f'${player.bet} added to Player {player.number}\'s money (${player.money})')
 
         self.deal_secret_card()
         self.print_dealer_cards()
+        if self.cards[0].value + self.secret_card.value == 21:
+            print('Dealer has Black Jack!')
+            self.cards.pop(1)
+            self.cards.append(self.secret_card)
+            self.print_dealer_cards()
+            print('End of game.')
+            self.end_game = True
         print('-------------------------------------')
 
     def print_player_cards(self, player):
@@ -66,3 +78,5 @@ class Dealer():
             player.turn(dealer=self)
             time.sleep(1)
             print()
+
+    # TODO: Add ending
