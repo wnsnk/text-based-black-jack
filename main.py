@@ -1,6 +1,6 @@
-from cards import create_deck, shuffle_cards
-from dealer import Dealer
-from player import Player
+from modules.cards import create_deck, shuffle_cards
+from modules.dealer import Dealer
+from modules.player import Player
 import random
 
 deck = create_deck()

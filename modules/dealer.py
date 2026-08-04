@@ -1,5 +1,5 @@
 import time
-from cards import placeholder
+from modules.cards import placeholder
 
 
 class Dealer():
