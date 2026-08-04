@@ -1,17 +1,24 @@
 import time
+from .dealer import dotted_line
 
 
 class Player():
     def __init__(self, number):
         self.number = number
         self.cards = []
-        self.money = 10000
+        self.money = 1000
         self.bet = 0
         self.score = 0
         self.has_blackjack = False
+        self.bust = False
 
     def bet_money(self):
-        print('\n' * 20)
+        print(dotted_line)
+        if self.money < 1:
+            print('YOU LOST ALL YOUR MONEY, GAME OVER!')
+            self.bust = True
+            # TODO: Stop player from continuing
+            return
         legal_bet = False
         while not legal_bet:
             print(f'Player {self.number}: You have ${self.money}')
@@ -29,10 +36,21 @@ class Player():
                 legal_bet = True
             self.money -= self.bet
 
+    def print_info(self, total_value):
+        print(f'Total Value: {total_value}')
+        print(f'Money ${self.money}')
+        print(f'Current bet: ${self.bet}')
+
+    def calc_value(self):
+        value_list = []
+        for card in self.cards:
+            value_list.append(card.value)
+        return sum(value_list)
+
     def turn(self, dealer):
         count = 0
         self.options = ['stand', 'hit']
-        if self.money > self.bet:
+        if self.money >= self.bet:
             self.options.append('double down')
         if self.cards[0].value == self.cards[1].value:
             self.options.append('split')
@@ -42,21 +60,16 @@ class Player():
         while not end_of_turn:
             count += 1
             self.print_player_cards()
-            total_value = 0
-            for card in self.cards:
-                total_value += card.value
-            print(f'Total Value: {total_value}')
-            print(f'Money ${self.money}')
-            print(f'Current bet: ${self.bet}')
+            self.score = self.calc_value()
+            self.print_info(self.score)
 
-            if total_value == 21:
+            if self.score == 21:
                 print('You have 21! End of turn')
-                self.score = total_value
                 end_of_turn = True
                 return
-            elif total_value > 21:
+            elif self.score > 21:
                 print('Bust!')
-                self.score = 0
+                self.bust = True
                 end_of_turn = True
                 return
 
@@ -73,11 +86,15 @@ class Player():
                 end_of_turn = True
             elif self.choice == 'hit':
                 dealer.deal_card(self)
-            elif self.choice == 'double down' or self.choice == 'dd':
+            elif self.choice == 'double down':
                 self.money -= self.bet
-                self.bet * 2
+                self.bet = self.bet * 2
                 print('Doubled Down!')
                 dealer.deal_card(self)
+                self.print_player_cards()
+                self.score = self.calc_value()
+                self.print_info(self.score)
+                end_of_turn = True
             elif self.choice == 'split':
                 self.options.remove('split')
                 # TODO
