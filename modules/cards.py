@@ -22,7 +22,6 @@ def create_deck():
         deck.append(Card('Q', 10, suit))
         deck.append(Card('K', 10, suit))
         deck.append(Card('A', 11, suit))
-        # TODO: Fix Ace
     return deck
 
 

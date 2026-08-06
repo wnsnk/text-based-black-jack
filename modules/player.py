@@ -61,6 +61,8 @@ class Player():
             count += 1
             self.print_player_cards()
             self.score = self.calc_value()
+            if self.score > 21:
+                self.calc_ace_value()
             self.print_info(self.score)
 
             if self.score == 21:
@@ -111,3 +113,15 @@ class Player():
 
     def hit(self, dealer):
         dealer.deal_card(self)
+
+    def calc_ace_value(self):
+        if self.score > 21:
+            for card in self.cards:
+                if card.symbol == 'A' and card.value == 11:
+                    card.value = 1
+                    self.score = self.calc_value()
+                    print('score:', self.score)
+                    if self.score > 21:
+                        continue
+                    else:
+                        break

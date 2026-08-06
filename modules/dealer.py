@@ -96,11 +96,25 @@ class Dealer():
             self.deal_card(self)
             self.print_dealer_cards()
             self.score = self.calc_value()
+            if self.score > 21:
+                self.calc_ace_value()
             print(f'Total Value: {self.score}')
 
         if self.score > 21:
             print('Dealer bust')
             self.bust = True
+
+    def calc_ace_value(self):
+        if self.score > 21:
+            for card in self.cards:
+                if card.symbol == 'A' and card.value == 11:
+                    card.value = 1
+                    self.score = self.calc_value()
+                    print('score:', self.score)
+                    if self.score > 21:
+                        continue
+                    else:
+                        break
 
     def compare_scores(self, players):
         for player in players:
