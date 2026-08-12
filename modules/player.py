@@ -1,6 +1,9 @@
 import time
-from .dealer import dotted_line, Dealer
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .dealer import Dealer
 from .cards import Card
+from ._print import dotted_line
 
 
 class Player():
@@ -135,3 +138,17 @@ class Player():
                         continue
                     else:
                         break
+
+
+class AIPlayer(Player):
+    def __init__(self, number, AI):
+        super().__init__(number)
+        self.AI = AI
+
+    def bet_money(self):
+        self.betting_choices = [10, 25, 50, 100, 250]
+        # let ai choose a number between 0 - 4
+
+    def turn(self, dealer: Dealer):
+        # 5=stand, 6=hit, 7=double down (if available)
+        pass

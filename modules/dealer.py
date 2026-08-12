@@ -1,9 +1,11 @@
 import time
 from modules.cards import placeholder
 from .cards import create_deck, shuffle_cards, Card
-from .player import Player
 
-dotted_line = '-------------------------------------'
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .player import Player
+from ._print import dotted_line
 
 
 class Dealer():
@@ -17,13 +19,12 @@ class Dealer():
         self.score = 0
         self.bust = False
 
-    def take_bets(self, players):
+    def take_bets(self, players: list[Player]):
         '''Ask Players to place a bet'''
         for player in players:
-            player: Player
             player.bet_money()
 
-    def deal_card(self, player):
+    def deal_card(self, player: Player):
         '''Deal 1 card to Player'''
         player.cards.append(self.deck[0])
         self.deck.pop(0)
