@@ -1,10 +1,12 @@
 import time
-from .dealer import dotted_line
+from .dealer import dotted_line, Dealer
+from .cards import Card
 
 
 class Player():
     def __init__(self, number):
         self.number = number
+        self.cards: list[Card]
         self.cards = []
         self.money = 1000
         self.bet = 0
@@ -13,6 +15,7 @@ class Player():
         self.bust = False
 
     def bet_money(self):
+        '''Ask user how much money to bet'''
         print(dotted_line)
         if self.money < 1:
             print('YOU LOST ALL YOUR MONEY, GAME OVER!')
@@ -37,23 +40,27 @@ class Player():
             self.money -= self.bet
 
     def print_info(self, total_value):
+        '''print info about value, money and current bet to terminal'''
         print(f'Total Value: {total_value}')
         print(f'Money ${self.money}')
         print(f'Current bet: ${self.bet}')
 
-    def calc_value(self):
+    def calc_value(self) -> int:
+        '''Calculate the value of player hand'''
         value_list = []
         for card in self.cards:
+            card: Card
             value_list.append(card.value)
         return sum(value_list)
 
-    def turn(self, dealer):
+    def turn(self, dealer: Dealer):
+        '''Starts the turn of the player'''
         count = 0
         self.options = ['stand', 'hit']
         if self.money >= self.bet:
             self.options.append('double down')
-        if self.cards[0].value == self.cards[1].value:
-            self.options.append('split')
+        # if self.cards[0].value == self.cards[1].value:
+        #     self.options.append('split')
 
         end_of_turn = False
 
@@ -106,15 +113,18 @@ class Player():
                 pass
 
     def print_player_cards(self):
+        '''Print all cards from self to console'''
         print(f'Player {self.number} cards:')
         for card in self.cards:
             print(card.symbol, card.suit)
         time.sleep(1)
 
-    def hit(self, dealer):
+    def hit(self, dealer: Dealer):
+        '''Get extra card from dealer'''
         dealer.deal_card(self)
 
     def calc_ace_value(self):
+        '''Calculates if an Ace should be 11 or 1'''
         if self.score > 21:
             for card in self.cards:
                 if card.symbol == 'A' and card.value == 11:
