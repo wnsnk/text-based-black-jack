@@ -8,7 +8,7 @@ class Card():
         self.suit = suit
 
 
-placeholder = Card('?', '?', '?')
+placeholder = Card('?', 0, '?')
 
 
 def create_deck():
