@@ -4,7 +4,7 @@ from .cards import create_deck, shuffle_cards, Card
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from .player import Player
+    from .player import Player, AIPlayer
 from ._print import dotted_line
 
 
@@ -69,7 +69,7 @@ class Dealer():
         print(f'Player {player.number} cards:')
         for card in player.cards:
             print(card.symbol, card.suit)
-        time.sleep(1)
+        # time.sleep(1)
 
     def print_dealer_cards(self):
         '''Prints Dealer Cards'''
@@ -77,18 +77,18 @@ class Dealer():
         for card in self.cards:
             card: Card
             print(card.symbol, card.suit)
-        time.sleep(1)
+        # time.sleep(1)
 
     def start_game(self, players: list[Player]):
         '''starts the game after all players and dealer get their starting cards'''
         for player in players:
             if player.has_blackjack:
                 print(f'Player {player.number} already has black jack.')
-                time.sleep(1)
+                # time.sleep(1)
                 print()
                 continue
             player.turn(dealer=self)
-            time.sleep(1)
+            # time.sleep(1)
             print()
 
     def show_secret_card(self):
@@ -135,31 +135,59 @@ class Dealer():
                     else:
                         break
 
-    def compare_scores(self, players: list[Player]):
+    def compare_scores(self, players: list[AIPlayer]):
         '''Compares the scores of all Players Against the score of the Dealer and handles wins or losses'''
+
         for player in players:
+            # if player.AI:
+            #     print('player action'),
+            #     print('player state: ', player.state)
+            #     print('player card value:', player.calc_value())
+            #     print('dealer first card value:', self.cards[0].value)
+            #     print('dealer total value:', self.calc_value())
+            #     dealer_value = self.cards[0].value
+            #     player.state = player.AI.calc_state(
+            #         player.calc_value(), dealer_value)
             if player.bust:
+                if player.AI:
+                    player.AI.get_reward(
+                        state=player.state, action=player.action, next_state=0, reward=-1, done=True)
                 continue
             elif player.has_blackjack:
                 player.bet = player.bet * 2.5
                 player.money += player.bet
                 print(
                     f'Player {player.number} had Black Jack! Money: ${player.money}')
+                if player.AI:
+                    player.AI.get_reward(
+                        state=player.state, action=player.action, next_state=0, reward=1, done=True)
             elif self.bust:
                 player.bet = player.bet * 2
                 player.money += player.bet
                 print(f'Player {player.number} won! Money: ${player.money}')
+                if player.AI:
+                    player.AI.get_reward(
+                        state=player.state, action=player.action, next_state=0, reward=1, done=True)
             elif player.score > self.score:
                 player.bet = player.bet * 2
                 player.money += player.bet
                 print(f'Player {player.number} won! Money: ${player.money}')
+                if player.AI:
+                    player.AI.get_reward(
+                        state=player.state, action=player.action, next_state=0, reward=1, done=True)
             elif player.score == self.score:
                 player.money += player.bet
                 print(
                     f'Player {player.number} tied! Money: ${player.money}')
+                if player.AI:
+                    player.AI.get_reward(
+                        state=player.state, action=player.action, next_state=0, reward=0, done=True)
             else:
                 print(
                     f'Player {player.number} Lost! Money: ${player.money}')
+                if player.AI:
+                    player.AI.get_reward(
+                        state=player.state, action=player.action, next_state=0, reward=-1, done=True)
 
     def reset_game(self, players):
         '''Resets all variables of player except Player.money, resets all variables of self.'''
