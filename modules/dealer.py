@@ -149,11 +149,13 @@ class Dealer():
             #     player.state = player.AI.calc_state(
             #         player.calc_value(), dealer_value)
             if player.bust:
+                player.total_losses += 1
                 if player.AI:
                     player.AI.get_reward(
                         state=player.state, action=player.action, next_state=0, reward=-1, done=True)
                 continue
             elif player.has_blackjack:
+                player.total_wins += 1
                 player.bet = player.bet * 2.5
                 player.money += player.bet
                 print(
@@ -162,6 +164,7 @@ class Dealer():
                     player.AI.get_reward(
                         state=player.state, action=player.action, next_state=0, reward=1, done=True)
             elif self.bust:
+                player.total_wins += 1
                 player.bet = player.bet * 2
                 player.money += player.bet
                 print(f'Player {player.number} won! Money: ${player.money}')
@@ -169,6 +172,7 @@ class Dealer():
                     player.AI.get_reward(
                         state=player.state, action=player.action, next_state=0, reward=1, done=True)
             elif player.score > self.score:
+                player.total_wins += 1
                 player.bet = player.bet * 2
                 player.money += player.bet
                 print(f'Player {player.number} won! Money: ${player.money}')
@@ -176,6 +180,7 @@ class Dealer():
                     player.AI.get_reward(
                         state=player.state, action=player.action, next_state=0, reward=1, done=True)
             elif player.score == self.score:
+                player.total_ties += 1
                 player.money += player.bet
                 print(
                     f'Player {player.number} tied! Money: ${player.money}')
@@ -185,6 +190,7 @@ class Dealer():
             else:
                 print(
                     f'Player {player.number} Lost! Money: ${player.money}')
+                player.total_losses += 1
                 if player.AI:
                     player.AI.get_reward(
                         state=player.state, action=player.action, next_state=0, reward=-1, done=True)

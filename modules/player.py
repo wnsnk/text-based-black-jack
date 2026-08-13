@@ -18,6 +18,9 @@ class Player():
         self.score = 0
         self.has_blackjack = False
         self.bust = False
+        self.total_wins = 0
+        self.total_losses = 0
+        self.total_ties = 0
 
     def bet_money(self):
         '''Ask user how much money to bet'''
