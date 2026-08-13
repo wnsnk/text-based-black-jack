@@ -4,26 +4,18 @@ import random
 from blackjack import BlackJack
 from modules.player import Player
 
-numpy.set_printoptions(threshold=sys.maxsize)
-# 1 state for betting money. With 5 choices
-# bet_money_state = 1
 #  18 possible player values (4 (2 * 2) - 21)
 possible_player_values = 18
 #  20 possibe dealer values (2 - 21)
 possible_dealer_values = 20
-# 5 possible betting types
-# num_type_of_bets = 5
+
 number_of_states = (possible_player_values *
-                    possible_dealer_values)  # * num_type_of_bets  # + bet_money_state
+                    possible_dealer_values)
 
 
-# When betting there are 5 options
-# bet_options = 5
-bet_options = 0
-# When playing sometimes 3 (stand, hit , double)
-# Double is sometimes not possible
-playing_options = 3
-number_of_actions = bet_options + playing_options
+# When playing there are max 3 actions (stand, hit , double)
+# Double is not always possible
+number_of_actions = 3
 
 
 class QLearningBot():
@@ -34,14 +26,13 @@ class QLearningBot():
         self.exploration_rate = 1.0  # epsilon
         self.epsilon_decay = 0.9995
         self.min_epsilon = 0.01
-        self.num_of_episodes = 100000
+        self.num_of_episodes = int(
+            input('HOW MANY EPISODES DO YOU WANT TO TRAIN?'))
         self.max_steps = 9
 
         self.q_table = numpy.zeros((number_of_states, number_of_actions))
 
     def calc_state(self, self_value: int, dealer_value: int):
-        print(self_value)
-        print(type(self_value))
         return (self_value - 4) * possible_dealer_values + (dealer_value - 2)
 
     def choose_action(self, state, can_double_down):
@@ -76,24 +67,25 @@ class QLearningBot():
     def train(self):
         self.env = BlackJack(0, 1, self)
         print(self.q_table)
-        print_counter = 0
+        backup_counter = 0
         for episode in range(self.num_of_episodes):
-            print_counter += 1
-            print('EPISODE: ', episode)
-            # if print_counter == 100:
-            #     print(self.q_table)
-            #     print_counter = 0
-            # state, _ = reset()
-            state = self.env.reset()
-            done = False
-            # for step in range(self.max_steps):
-            # action = self.choose_action(state)
+            backup_counter += 1
+            print(f'EPISODE: {episode}/{self.num_of_episodes}')
+            if backup_counter == 5000:
+                self.save_q_table(
+                    f'q_table_{self.num_of_episodes}_training_BACKUP_{episode}')
+                print(self.q_table)
+                backup_counter = 0
 
-            # env.step(action)
+            self.env.reset()
+
         print(self.q_table)
-        numpy.save('q_table_1.csv', self.q_table)
-        numpy.save('q_table_1.npy', self.q_table)
+        self.save_q_table(
+            name=f'q_table_{self.num_of_episodes}_training', episode=episode)
+        print(f'TRAINING FINISHED. TOTAL EPISODES: {episode}')
 
-
-ai = QLearningBot()
-ai.train()
+    def save_q_table(self, name):
+        numpy.savetxt(
+            f'{name}.csv', self.q_table, delimiter=',')
+        numpy.save(
+            f'{name}', self.q_table)
