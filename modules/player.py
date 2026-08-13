@@ -2,8 +2,10 @@ import time
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .dealer import Dealer
+    from ..q_learning import QLearningBot
 from .cards import Card
 from ._print import dotted_line
+import random
 
 
 class Player():
@@ -32,7 +34,7 @@ class Player():
                 self.bet = int(input('How much would you like to bet?\n'))
             except ValueError:
                 print('You can only bet money!')
-                time.sleep(2)
+                # time.sleep(2)
                 self.bet_money()
             if self.bet > self.money:
                 print('Not enough money!')
@@ -120,7 +122,7 @@ class Player():
         print(f'Player {self.number} cards:')
         for card in self.cards:
             print(card.symbol, card.suit)
-        time.sleep(1)
+        # time.sleep(1)
 
     def hit(self, dealer: Dealer):
         '''Get extra card from dealer'''
@@ -141,14 +143,84 @@ class Player():
 
 
 class AIPlayer(Player):
-    def __init__(self, number, AI):
+    def __init__(self, number, AI: QLearningBot):
         super().__init__(number)
         self.AI = AI
+        self.state = None
+        self.action = None
 
     def bet_money(self):
-        self.betting_choices = [10, 25, 50, 100, 250]
-        # let ai choose a number between 0 - 4
+        betting_choices = [10, 25, 50, 100, 250]
+        for bet in betting_choices:
+            if bet > self.money:
+                betting_choices.remove(bet)
+        # first choose random bet? maybe later train ai to also bet?
+        self.bet = random.choice(betting_choices)
+        print(f'Player {self.number} (AI) bets ${self.bet}')
 
     def turn(self, dealer: Dealer):
-        # 5=stand, 6=hit, 7=double down (if available)
-        pass
+        count = 0
+        self.options = ['stand', 'hit']
+        if self.money >= self.bet:
+            self.options.append('double down')
+            self.can_double_down = True
+        else:
+            self.can_double_down = False
+
+        end_of_turn = False
+
+        while not end_of_turn:
+            count += 1
+            self.print_player_cards()
+            self.score = self.calc_value()
+            if self.score > 21:
+                self.calc_ace_value()
+            self.print_info(self.score)
+
+            if self.score == 21:
+                print('You have 21! End of turn')
+                end_of_turn = True
+                return
+            elif self.score > 21:
+                print('Bust!')
+                self.bust = True
+                end_of_turn = True
+                return
+            if count > 1:
+                print('2nd round')
+                self.AI.get_reward(state=self.state, action=self.action, next_state=self.AI.calc_state(
+                    self.score, dealer.calc_value()), reward=0.5, done=False)
+            legal_move = False
+            while not legal_move:
+                print('What would you like to do:')
+                print(self.options)
+                self.state = self.AI.calc_state(
+                    self_value=self.calc_value(), dealer_value=dealer.calc_value())
+                self.action = self.AI.choose_action(
+                    self.state, can_double_down=self.can_double_down)
+
+                # if self.choice not in self.options:
+                #     print('Not a legal move!')
+                # else:
+                legal_move = True
+            if self.action == 0:
+                end_of_turn = True
+            elif self.action == 1:
+                dealer.deal_card(self)
+            elif self.action == 2:
+                self.money -= self.bet
+                self.bet = self.bet * 2
+                print('Doubled Down!')
+                dealer.deal_card(self)
+                self.print_player_cards()
+                self.score = self.calc_value()
+                self.print_info(self.score)
+                end_of_turn = True
+            elif self.choice == 'split':
+                self.options.remove('split')
+                # TODO
+            try:
+                self.options.remove('double down')
+                self.can_double_down = False
+            except ValueError:
+                pass
