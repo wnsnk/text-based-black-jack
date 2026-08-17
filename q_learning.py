@@ -31,6 +31,8 @@ class QLearningBot():
         self.max_steps = 9
 
         self.q_table = numpy.zeros((number_of_states, number_of_actions))
+        self.q_table = numpy.load('q_table_50000_training_BACKUP_4999.npy')
+        print(self.q_table)
 
     def calc_state(self, self_value: int, dealer_value: int):
         return (self_value - 4) * possible_dealer_values + (dealer_value - 2)
@@ -68,7 +70,7 @@ class QLearningBot():
         self.env = BlackJack(0, 1, self)
         print(self.q_table)
         backup_counter = 0
-        for episode in range(self.num_of_episodes):
+        for episode in range(5000, self.num_of_episodes):
             backup_counter += 1
             print(f'EPISODE: {episode}/{self.num_of_episodes}')
             if backup_counter == 5000:
@@ -89,3 +91,7 @@ class QLearningBot():
             f'{name}.csv', self.q_table, delimiter=',')
         numpy.save(
             f'{name}', self.q_table)
+
+
+ai = QLearningBot()
+ai.train()
