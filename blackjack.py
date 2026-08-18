@@ -16,12 +16,14 @@ class BlackJack():
         self.PLAYERS = num_players
         self.AI_PLAYERS = num_ai_players
         self.player_list = []
+        self.ai_player: AIPlayer
         for num in range(self.PLAYERS):
             player = Player(num + 1)
             self.player_list.append(player)
 
         for num in range(self.AI_PLAYERS):
             player = AIPlayer(len(self.player_list) + 1, AI=AI)
+            self.ai_player = player
             self.player_list.append(player)
 
     def reset(self):
